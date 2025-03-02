@@ -1,0 +1,7 @@
+[project]
+name = "geospatial_tools_cli"
+version = "1.0"
+dependencies = ["click", "shapely", "fiona", "geopandas"]
+
+[project.scripts]
+geospatial-tools = "geospatial_tools_cli.cli:main"
