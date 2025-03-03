@@ -19,8 +19,9 @@ def main_menu():
         
         if choice == "1":
             convert_menu()
+        elif choice == "2":
+            projection_transformation_menu()
         elif choice == "0":
-            clear_screen()
             print("Exiting... Goodbye! 👋")
             break
         else:
@@ -50,6 +51,23 @@ def convert_menu():
             break
         else:
             print("Invalid option, please try again.")
+
+def projection_transformation_menu():
+    while True:
+        clear_screen()
+        print("\n============ Projection Transformation ===========")
+        print("=========== Select Transformation Option ===========")
+        print("1. Transformation to WGS84")
+        print("2. Transformation to UTM")
+        print("3. Transformation to TM3")
+        print("4. Check Projection")
+        print("0. Return to Main Menu 🔙")
+        choice = input("Please Select: ")
+        
+        if choice == "0":
+            break
+        else:
+            print("Processing transformation...")
 
 def convert_gdb():
     while True:
