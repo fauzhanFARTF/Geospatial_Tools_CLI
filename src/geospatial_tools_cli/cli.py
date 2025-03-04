@@ -190,7 +190,10 @@ def convert_kml():
         print("3. KML → SHP & ZIP")
         print("4. Back  🔙")
         choice = input("Please Select: ")
-        
+        if choice == "1":
+            print("\n🔄 Processing conversion KML to GeoJSON...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/kml_to_geojson.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
         if choice == "2":
             print("\n🔄 Processing conversion KML to SHP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/kml_to_shp.py"], capture_output=False)
