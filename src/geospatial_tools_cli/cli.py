@@ -149,9 +149,13 @@ def convert_geojson():
         choice = input("Please Select: ")
 
         if choice == "2":
-            print("\n🔄 Processing conversion...\n")
+            print("\n🔄 Processing conversion GeoJSON to SHP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_shp.py"], capture_output=False)
-            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang       
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
+        if choice == "1":
+            print("\n🔄 Processing conversion GeoJSON to KML...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_kml.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang      
         if choice == "4":
             break
         else:
