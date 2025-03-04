@@ -2,20 +2,28 @@ import geopandas as gpd
 import os
 import glob
 
+# Dapatkan path absolut dari direktori proyek
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+
+# Path input dan output
+input_folder = os.path.join(BASE_DIR, "data/input")
+output_folder = os.path.join(BASE_DIR, "data/output")
+
 def convert_geojson_to_shp(input_folder, output_folder):
     """
-    Mengonversi semua file GeoJSON dalam folder input ke format Shapefile (SHP).
-    
+    Mengonversi semua file GeoJSON dalam folder input ke format Shapefile (SHP),
+    dan menyimpan hasilnya dalam folder masing-masing berdasarkan nama file.
+
     :param input_folder: Path folder yang berisi file GeoJSON
     :param output_folder: Path folder untuk menyimpan file SHP
     """
-    os.makedirs(output_folder, exist_ok=True)  # Pastikan folder output tersedia
+    os.makedirs(output_folder, exist_ok=True)  # Buat folder output jika belum ada
 
-    # Dapatkan semua file GeoJSON dalam folder input
+    # Cari semua file GeoJSON dalam folder input
     geojson_files = glob.glob(os.path.join(input_folder, "*.geojson"))
 
     if not geojson_files:
-        print("❌ Tidak ada file GeoJSON di folder input!")
+        print(f"❌ Tidak ada file GeoJSON di folder input: {input_folder}")
         return
 
     for geojson_file in geojson_files:
@@ -23,13 +31,17 @@ def convert_geojson_to_shp(input_folder, output_folder):
             # Ambil nama file tanpa ekstensi
             filename = os.path.splitext(os.path.basename(geojson_file))[0]
             
+            # Buat folder khusus berdasarkan nama file input
+            folder_output = os.path.join(output_folder, filename)
+            os.makedirs(folder_output, exist_ok=True)
+
             # Path untuk output SHP
-            output_shp = os.path.join(output_folder, f"{filename}.shp")
+            output_shp = os.path.join(folder_output, f"{filename}.shp")
             
             # Baca GeoJSON
             gdf = gpd.read_file(geojson_file)
             
-            # Simpan sebagai SHP
+            # Simpan sebagai SHP dalam folder yang sesuai
             gdf.to_file(output_shp, driver="ESRI Shapefile")
 
             print(f"✅ {geojson_file} berhasil dikonversi ke {output_shp}")
@@ -38,7 +50,7 @@ def convert_geojson_to_shp(input_folder, output_folder):
             print(f"❌ Gagal mengonversi {geojson_file}: {e}")
 
 if __name__ == "__main__":
-    input_folder = "/Users/fauzannurrachman/Sites/Project/Portofolio/tools/Geospatial_Tools_CLI/data/input"    # Folder input yang berisi file GeoJSON
-    output_folder = "/Users/fauzannurrachman/Sites/Project/Portofolio/tools/Geospatial_Tools_CLI/data/output"  # Folder output untuk hasil SHP
+    print(f"📂 Input Folder: {input_folder}")
+    print(f"📂 Output Folder: {output_folder}\n")
 
     convert_geojson_to_shp(input_folder, output_folder)
