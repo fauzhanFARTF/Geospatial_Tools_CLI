@@ -21,6 +21,8 @@ def main_menu():
             convert_menu()
         elif choice == "2":
             projection_transformation_menu()
+        elif choice == "3":
+            calculate_area_menu()
         elif choice == "0":
             print("Exiting... Goodbye! 👋")
             break
@@ -68,6 +70,21 @@ def projection_transformation_menu():
             break
         else:
             print("Processing transformation...")
+
+def calculate_area_menu():
+    while True:
+        clear_screen()
+        print("\n============ Calculate Area ===========")
+        print("=========== Select Option ===========")
+        print("1. Calculate Area")
+        print("2. Area Adjustment -> Export")
+        print("0. Return to Main Menu 🔙")
+        choice = input("Please Select: ")
+        
+        if choice == "0":
+            break
+        else:
+            print("Processing area calculation...")
 
 def convert_gdb():
     while True:
