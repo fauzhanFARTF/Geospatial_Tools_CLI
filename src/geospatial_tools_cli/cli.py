@@ -23,6 +23,8 @@ def main_menu():
             projection_transformation_menu()
         elif choice == "3":
             calculate_area_menu()
+        elif choice == "4":
+            analytic_tools_menu()
         elif choice == "0":
             print("Exiting... Goodbye! 👋")
             break
@@ -85,6 +87,22 @@ def calculate_area_menu():
             break
         else:
             print("Processing area calculation...")
+
+def analytic_tools_menu():
+    while True:
+        clear_screen()
+        print("\n============ Analytic Tools ===========")
+        print("=========== Select Option ===========")
+        print("1. Intersect")
+        print("2. Union")
+        print("3. Erase")
+        print("0. Return to Main Menu 🔙")
+        choice = input("Please Select: ")
+        
+        if choice == "0":
+            break
+        else:
+            print("Processing analytic tool...")
 
 def convert_gdb():
     while True:
