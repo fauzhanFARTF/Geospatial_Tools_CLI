@@ -116,6 +116,14 @@ def convert_gdb():
         print("4. GDB → SHP & ZIP")
         print("5. Back  🔙")
         choice = input("Please Select: ")
+        if choice == "1":
+            print("\n🔄 Processing conversion GDB to KML...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/gdb_to_kml.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang  
+        if choice == "2":
+            print("\n🔄 Processing conversion GDB to GeoJSON...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/gdb_to_geojson.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang  
         if choice == "3":
             print("\n🔄 Processing conversion GDB to SHP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/gdb_to_shp.py"], capture_output=False)
