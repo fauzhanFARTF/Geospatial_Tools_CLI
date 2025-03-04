@@ -99,7 +99,11 @@ def analytic_tools_menu():
         print("3. Erase")
         print("0. Return to Main Menu 🔙")
         choice = input("Please Select: ")
-        
+
+        if choice == "1":
+            print("\n🔄 Processing Intersect...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/analytic/intersection.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
         if choice == "0":
             break
         else:
