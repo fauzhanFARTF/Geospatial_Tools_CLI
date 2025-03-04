@@ -147,6 +147,14 @@ def convert_shp():
         print("3. Back  🔙")
         choice = input("Please Select: ")
         
+        if choice == "2":
+            print("\n🔄 Processing conversion SHP to GeoJSON...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/shp_to_geojson.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
+        if choice == "1":
+            print("\n🔄 Processing conversion SHP to KML...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/shp_to_kml.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
         if choice == "3":
             break
         else:
