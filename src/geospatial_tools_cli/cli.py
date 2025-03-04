@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -146,7 +147,11 @@ def convert_geojson():
         print("3. GeoJSON → SHP & ZIP")
         print("4. Back  🔙")
         choice = input("Please Select: ")
-        
+
+        if choice == "2":
+            print("\n🔄 Processing conversion...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_shp.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang       
         if choice == "4":
             break
         else:
