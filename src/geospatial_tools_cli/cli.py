@@ -1,5 +1,6 @@
 import os
 import subprocess
+from src.geospatial_tools_cli.utils.organizer import move_all_to_storage
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -26,6 +27,11 @@ def main_menu():
             calculate_area_menu()
         elif choice == "4":
             analytic_tools_menu()
+        elif choice == "5":
+            print("\n🔄 Processing Move All to Storage...\n")
+            result = move_all_to_storage()
+            print(result)
+            input("\n⏎ Press Enter to return...")  
         elif choice == "0":
             print("Exiting... Goodbye! 👋")
             break
@@ -118,7 +124,7 @@ def convert_gdb():
         print("2. GDB → GeoJSON")
         print("3. GDB → SHP")
         print("4. GDB → SHP & ZIP")
-        print("5. Back  🔙")
+        print("0. Back  🔙")
         choice = input("Please Select: ")
         if choice == "1":
             print("\n🔄 Processing conversion GDB to KML...\n")
@@ -136,7 +142,7 @@ def convert_gdb():
             print("\n🔄 Processing conversion GDB to SHP & ZIP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/gdb_to_shp_zip.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang         
-        if choice == "5":
+        if choice == "0":
             break
         else:
             print("Processing conversion...")
@@ -148,18 +154,18 @@ def convert_shp():
         print("===== Select Conversion Option =====")
         print("1. SHP → KML")
         print("2. SHP → GeoJSON")
-        print("3. Back  🔙")
+        print("0. Back  🔙")
         choice = input("Please Select: ")
         
-        if choice == "2":
-            print("\n🔄 Processing conversion SHP to GeoJSON...\n")
-            subprocess.run(["python", "src/geospatial_tools_cli/converters/shp_to_geojson.py"], capture_output=False)
-            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
         if choice == "1":
             print("\n🔄 Processing conversion SHP to KML...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/shp_to_kml.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
-        if choice == "3":
+        if choice == "2":
+            print("\n🔄 Processing conversion SHP to GeoJSON...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/shp_to_geojson.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
+        if choice == "0":
             break
         else:
             print("Processing conversion...")
@@ -172,7 +178,7 @@ def convert_geojson():
         print("1. GeoJSON → KML")
         print("2. GeoJSON → SHP")
         print("3. GeoJSON → SHP & ZIP")
-        print("4. Back  🔙")
+        print("0. Back  🔙")
         choice = input("Please Select: ")
 
         if choice == "1":
@@ -187,7 +193,7 @@ def convert_geojson():
             print("\n🔄 Processing conversion GeoJSON to SHP & ZIP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_shp_zip.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
-        if choice == "4":
+        if choice == "0":
             break
         else:
             print("Processing conversion...")
@@ -200,7 +206,7 @@ def convert_kml():
         print("1. KML → GeoJSON")
         print("2. KML → SHP")
         print("3. KML → SHP & ZIP")
-        print("4. Back  🔙")
+        print("0. Back  🔙")
         choice = input("Please Select: ")
         if choice == "1":
             print("\n🔄 Processing conversion KML to GeoJSON...\n")
@@ -214,7 +220,7 @@ def convert_kml():
             print("\n🔄 Processing conversion KML to SHP & ZIP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/kml_to_shp_zip.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang         
-        if choice == "4":
+        if choice == "0":
             break
         else:
             print("Processing conversion...")

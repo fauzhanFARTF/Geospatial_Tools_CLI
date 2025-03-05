@@ -2,6 +2,7 @@ import geopandas as gpd
 import os
 import glob
 import fiona
+import datetime
 
 # Dapatkan path absolut dari direktori proyek
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -31,10 +32,15 @@ def convert_gdb_to_kml(input_folder, output_folder):
         try:
             # Ambil nama folder GDB tanpa ekstensi
             gdb_name = os.path.splitext(os.path.basename(gdb_path))[0]
+
+            # Dapatkan timestamp saat ini
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             
-            # Buat folder berdasarkan nama file input
+            # Buat folder berdasarkan nama file input dan stempel waktu
+            # gdb_output_folder = os.path.join(output_folder, f"{gdb_name}_{timestamp}")
             gdb_output_folder = os.path.join(output_folder, gdb_name)
             os.makedirs(gdb_output_folder, exist_ok=True)
+
 
             # Ambil daftar layer dalam GDB
             layers = fiona.listlayers(gdb_path)
@@ -47,8 +53,8 @@ def convert_gdb_to_kml(input_folder, output_folder):
                 try:
                     print(f"🔄 Mengonversi layer: {layer} dari {gdb_name}.gdb ke KML...")
 
-                    # Path output untuk KML (langsung dalam folder utama)
-                    output_kml = os.path.join(gdb_output_folder, f"{layer}.kml")
+                    # Path output untuk KML dengan timestamp
+                    output_kml = os.path.join(gdb_output_folder, f"{layer}_{timestamp}.kml")
 
                     # Baca GDB dan simpan sebagai KML
                     gdf = gpd.read_file(gdb_path, layer=layer)

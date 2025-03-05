@@ -2,6 +2,7 @@ import geopandas as gpd
 import os
 import glob
 import fiona
+from datetime import datetime  # Import modul datetime
 
 # Dapatkan path absolut dari direktori proyek
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -13,7 +14,7 @@ output_folder = os.path.join(BASE_DIR, "data/output")
 def convert_gdb_to_geojson(input_folder, output_folder):
     """
     Mengonversi semua file GDB dalam folder input ke format GeoJSON.
-    Setiap layer dalam GDB akan disimpan dalam satu folder tanpa subfolder.
+    Setiap layer dalam GDB akan disimpan dengan nama file yang mengandung timestamp.
 
     :param input_folder: Path folder yang berisi file GDB
     :param output_folder: Path folder untuk menyimpan file GeoJSON
@@ -32,7 +33,11 @@ def convert_gdb_to_geojson(input_folder, output_folder):
             # Ambil nama folder GDB tanpa ekstensi
             gdb_name = os.path.splitext(os.path.basename(gdb_path))[0]
             
-            # Buat folder berdasarkan nama file input
+            # Dapatkan waktu saat ini dan format sebagai timestamp
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+            # Buat folder berdasarkan nama file input dan stempel waktu
+            # gdb_output_folder = os.path.join(output_folder, f"{gdb_name}_{timestamp}")
             gdb_output_folder = os.path.join(output_folder, gdb_name)
             os.makedirs(gdb_output_folder, exist_ok=True)
 
@@ -47,8 +52,9 @@ def convert_gdb_to_geojson(input_folder, output_folder):
                 try:
                     print(f"🔄 Mengonversi layer: {layer} dari {gdb_name}.gdb...")
 
-                    # Path output untuk GeoJSON (langsung dalam folder utama)
-                    output_geojson = os.path.join(gdb_output_folder, f"{layer}.geojson")
+
+                    # Path output untuk GeoJSON dengan timestamp
+                    output_geojson = os.path.join(gdb_output_folder, f"{layer}_{timestamp}.geojson")
 
                     # Baca GDB dan simpan sebagai GeoJSON
                     gdf = gpd.read_file(gdb_path, layer=layer)

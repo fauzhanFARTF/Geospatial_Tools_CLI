@@ -33,9 +33,31 @@ geospatial_tools_cli/
 |   |   |-- __init__.py
 |   |   |-- cli.py                 # Entry point CLI
 |   |   |-- converters/            # Modul konversi format geospasial
+|   |   |   |-- gdb_to_geojson.py
+|   |   |   |-- gdb_to_kml.py
+|   |   |   |-- gdb_to_geojson.py 
+|   |   |   |-- gdb_to_shp.py
+|   |   |   |-- geojson_to_kml.py
+|   |   |   |-- geojson_to_shp_zip.py
+|   |   |   |-- geojson_to_shp.py
+|   |   |   |-- kml_to_geojson.py
+|   |   |   |-- kml_to_shp_zip.py
+|   |   |   |-- kml_to_shp.py
+|   |   |   |-- shp_to_geojson.py
+|   |   |   |-- shp_to_kml.py               
 |   |   |-- projection_transformation/  # Modul transformasi proyeksi
+|   |   |   |-- check_projection.py
+|   |   |   |-- projection_transformation_to_TM3.py
+|   |   |   |-- projection_transformation_to_UTM.py
+|   |   |   |-- projection_transformation_to_WGS84.py
 |   |   |-- analytic/               # Modul analisis spasial
+|   |   |   |-- erase.py
+|   |   |   |-- intersection.py
+|   |   |   |-- union.py
 |   |   |-- calculation/            # Modul perhitungan geospasial
+|   |   |   |-- calculate_area_estimation.py
+|   |   |   |-- calculate_area_fix.py
+|   |   |   |-- calculate_area.py
 |   |   |-- utils/                   # Modul utilitas
 |-- tests/                        # Direktori pengujian
 |-- requirements.txt               # Daftar dependensi Python

@@ -3,6 +3,7 @@ import os
 import glob
 import zipfile
 import fiona
+from datetime import datetime
 
 # Dapatkan path absolut dari direktori proyek
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -32,8 +33,12 @@ def convert_gdb_to_shp_zip(input_folder, output_folder):
         try:
             # Ambil nama folder GDB tanpa ekstensi
             gdb_name = os.path.splitext(os.path.basename(gdb_path))[0]
-            
-            # Buat folder berdasarkan nama file input
+
+            # Dapatkan stempel waktu saat ini
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+            # Buat folder berdasarkan nama file input dan stempel waktu
+            # gdb_output_folder = os.path.join(output_folder, f"{gdb_name}_{timestamp}")
             gdb_output_folder = os.path.join(output_folder, gdb_name)
             os.makedirs(gdb_output_folder, exist_ok=True)
 
@@ -49,10 +54,12 @@ def convert_gdb_to_shp_zip(input_folder, output_folder):
                     print(f"🔄 Mengonversi layer: {layer} dari {gdb_name}.gdb...")
 
                     # Buat folder khusus untuk layer ini
-                    layer_folder = os.path.join(gdb_output_folder, layer)
+                    layer_folder = os.path.join(gdb_output_folder, f"{layer}_{timestamp}")
+                    # layer_folder = os.path.join(gdb_output_folder, f"{layer}")
                     os.makedirs(layer_folder, exist_ok=True)
 
                     # Path output untuk SHP
+                    # output_shp = os.path.join(layer_folder, f"{layer}_{timestamp}.shp")
                     output_shp = os.path.join(layer_folder, f"{layer}.shp")
 
                     # Baca GDB dan simpan sebagai SHP
@@ -61,8 +68,6 @@ def convert_gdb_to_shp_zip(input_folder, output_folder):
 
                 except Exception as e:
                     print(f"⚠️ Gagal mengonversi layer {layer}: {e}")
-
-            print(f"✅ {gdb_path} berhasil dikonversi ke folder {gdb_output_folder}")
 
         except Exception as e:
             print(f"❌ Gagal mengonversi {gdb_path}: {e}")
