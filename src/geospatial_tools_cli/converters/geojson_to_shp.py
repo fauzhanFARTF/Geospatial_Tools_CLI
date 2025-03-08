@@ -1,66 +1,46 @@
-import geopandas as gpd
 import os
-from datetime import datetime
 import shutil
+import geopandas as gpd
+from pathlib import Path
+from datetime import datetime
 
-# Tentukan path absolut dari direktori proyek
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+def convert_geojson_to_shp(source_directory, destination_directory):
+    """Mengonversi semua file GeoJSON menjadi Shapefile dengan struktur yang diinginkan."""
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    destination_directory = Path(destination_directory)
+    destination_directory.mkdir(parents=True, exist_ok=True)
+    
+    for file_path in Path(source_directory).rglob("*.geojson"):
+        relative_path = file_path.relative_to(source_directory)
+        parts = list(relative_path.parts)
+        
+        # Tambahkan timestamp ke setiap bagian folder
+        new_parts = [f"{part}_{timestamp}_shp" for part in parts[:-1]]
+        new_parts.append(parts[-1].replace(".geojson", f"_{timestamp}"))
+        
+        new_folder = destination_directory / Path(*new_parts)
+        new_folder.mkdir(parents=True, exist_ok=True)
+        
+        shp_path = new_folder / (file_path.stem + ".shp")
+        
+        try:
+            gdf = gpd.read_file(file_path)
+            gdf.to_file(shp_path, driver='ESRI Shapefile')
+            print(f"✅ Converted: {file_path} -> {shp_path}")
+        except Exception as e:
+            print(f"❌ Error converting {file_path}: {e}")
 
-# Path input dan output
-input_folder = os.path.join(BASE_DIR, "data/input")
-output_folder = os.path.join(BASE_DIR, "data/output")
-
-def convert_geojson_to_shp_and_zip(input_folder, output_folder):
-    """
-    Mengonversi semua file GeoJSON dalam folder input dan subfoldernya ke format Shapefile (SHP),
-    menyimpannya dalam folder output dengan struktur yang mirip dengan folder input,
-    menambahkan timestamp pada nama folder output, dan mengarsipkannya ke dalam file ZIP.
-
-    :param input_folder: Path folder yang berisi file GeoJSON
-    :param output_folder: Path folder untuk menyimpan file SHP dan arsip ZIP
-    """
-    os.makedirs(output_folder, exist_ok=True)  # Pastikan folder output ada
-
-    # Traversal rekursif melalui folder input
-    for root, _, files in os.walk(input_folder):
-        for file in files:
-            if file.lower().endswith('.geojson'):
-                geojson_file = os.path.join(root, file)
-                try:
-                    # Ambil nama file tanpa ekstensi
-                    filename = os.path.splitext(file)[0]
-                    
-                    # Dapatkan timestamp saat ini
-                    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                    
-                    # Tentukan path relatif dari file GeoJSON terhadap folder input
-                    relative_path = os.path.relpath(root, input_folder)
-                    
-                    if relative_path == '.':
-                        # Jika file GeoJSON berada langsung di dalam folder input
-                        folder_output = os.path.join(output_folder, f"{filename}_{timestamp}")
-                    else:
-                        # Jika file GeoJSON berada di dalam subfolder
-                        folder_output = os.path.join(output_folder, relative_path, f"{filename}_{timestamp}")
-                    
-                    os.makedirs(folder_output, exist_ok=True)
-                    
-                    # Path untuk output SHP
-                    output_shp = os.path.join(folder_output, f"{filename}.shp")
-                    
-                    # Baca GeoJSON dan konversi ke SHP
-                    gdf = gpd.read_file(geojson_file)
-                    gdf.to_file(output_shp, driver='ESRI Shapefile')
-                    
-                    print(f"✅ {geojson_file} berhasil dikonversi ke {output_shp}")
-
-                except Exception as e:
-                    print(f"❌ Gagal mengonversi {geojson_file}: {e}")
-            else:
-                print(f"⚠️ Melewati file {file} karena bukan file GeoJSON.")
+def main():
+    BASE_DIR = Path(__file__).resolve().parents[3]
+    input_folder = BASE_DIR / "data/input"
+    output_folder = BASE_DIR / "data/output"
+    
+    if not input_folder.exists():
+        print(f"⚠️ Folder {input_folder} tidak ditemukan.")
+        exit(1)
+    
+    print(f"📂 Processing GeoJSON files from: {input_folder}\n")
+    convert_geojson_to_shp(input_folder, output_folder)
 
 if __name__ == "__main__":
-    print(f"📂 Input Folder: {input_folder}")
-    print(f"📂 Output Folder: {output_folder}\n")
-
-    convert_geojson_to_shp_and_zip(input_folder, output_folder)
+    main()

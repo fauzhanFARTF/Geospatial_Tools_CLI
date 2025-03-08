@@ -16,6 +16,7 @@ def main_menu():
         print("4. Analytics Tools")
         print("5. Move Input & Output Files to Storage 📦")
         print("6. Delete All Input & Output Data 🗑️")
+        print("7. Remove Timestamp 🗑️")
         print("0. Exit 🚪")
         choice = input("Please Select: ")
         
@@ -31,6 +32,10 @@ def main_menu():
             print("\n🔄 Processing Move All to Storage...\n")
             result = move_all_to_storage()
             print(result)
+            input("\n⏎ Press Enter to return...")  
+        elif choice == "7":
+            print("\n🔄 Processing Remove Timestamp...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/utils/remove_timestamp.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  
         elif choice == "0":
             print("Exiting... Goodbye! 👋")
@@ -77,6 +82,10 @@ def projection_transformation_menu():
         
         if choice == "0":
             break
+        if choice == "4":
+            print("\n🔄 Processing Check Projection...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/projection_transformation/check_projection.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
         else:
             print("Processing transformation...")
 

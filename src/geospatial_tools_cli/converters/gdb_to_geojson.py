@@ -37,8 +37,8 @@ def convert_gdb_to_geojson(input_folder, output_folder):
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
             # Buat folder berdasarkan nama file input dan stempel waktu
-            # gdb_output_folder = os.path.join(output_folder, f"{gdb_name}_{timestamp}")
-            gdb_output_folder = os.path.join(output_folder, gdb_name)
+            gdb_output_folder = os.path.join(output_folder, f"{gdb_name}_{timestamp}_GeoJSON")
+            # gdb_output_folder = os.path.join(output_folder, gdb_name)
             os.makedirs(gdb_output_folder, exist_ok=True)
 
             # Ambil daftar layer dalam GDB
