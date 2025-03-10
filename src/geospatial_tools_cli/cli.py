@@ -1,11 +1,11 @@
 import os
 import subprocess
-from src.geospatial_tools_cli.utils.organizer import move_all_to_storage
+from geospatial_tools_cli.utils.organizer import move_all_to_storage
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def main_menu():
+def main():
     while True:
         clear_screen()
         print("\n========== Welcome to Geospatial Tools CLI ========== ")
@@ -235,4 +235,4 @@ def convert_kml():
             print("Processing conversion...")
 
 if __name__ == "__main__":
-    main_menu()
+    main()
