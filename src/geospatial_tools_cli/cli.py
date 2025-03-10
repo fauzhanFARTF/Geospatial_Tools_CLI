@@ -112,12 +112,25 @@ def analytic_tools_menu():
         print("1. Intersect")
         print("2. Union")
         print("3. Erase")
+        print("4. Merge Excel")
         print("0. Return to Main Menu 🔙")
         choice = input("Please Select: ")
 
         if choice == "1":
             print("\n🔄 Processing Intersect...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/analytic/intersection.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
+        if choice == "2":
+            print("\n🔄 Processing Union...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/analytic/union.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
+        if choice == "3":
+            print("\n🔄 Processing Erase...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/analytic/erase.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
+        if choice == "4":
+            print("\n🔄 Processing Erase...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/analytic/merge_excel.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang          
         if choice == "0":
             break

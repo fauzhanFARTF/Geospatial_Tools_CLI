@@ -5,18 +5,21 @@ import geopandas as gpd
 import fiona
 
 def find_geospatial_files(folder_path):
-    """Mencari file geospasial (GeoJSON, KML, SHP) di dalam folder."""
+    """Mencari file geospasial (GeoJSON, KML, SHP) di dalam folder utama."""
     folder_path = Path(folder_path)
 
     if not folder_path.exists():
         raise FileNotFoundError(f"❌ Folder {folder_path} tidak ditemukan!")
 
     supported_formats = {".geojson", ".kml", ".shp"}
-    geospatial_files = []
+    geospatial_files = [
+        file for file in folder_path.glob("*")  # Hanya ambil file di folder utama
+        if file.suffix.lower() in supported_formats
+    ]
 
-    for file in folder_path.rglob("*"):
-        if file.suffix.lower() in supported_formats:
-            geospatial_files.append(file)
+    print(f"🔍 Menemukan {len(geospatial_files)} file di {folder_path}:")
+    for file in geospatial_files:
+        print(f"  - {file}")  # ✅ Debugging: Pastikan file ditemukan
 
     if not geospatial_files:
         raise FileNotFoundError(f"⚠️ Tidak ada file geospasial ditemukan di {folder_path}.")
@@ -24,7 +27,7 @@ def find_geospatial_files(folder_path):
     return geospatial_files
 
 def geospatial_intersect(input_base_folder, input_coverage_folder, output_base_folder):
-    """Melakukan intersect antara file geospasial di folder input dan file coverage."""
+    """Melakukan operasi intersect antara file geospasial di folder input dan file coverage."""
     
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     input_base_folder = Path(input_base_folder)
@@ -36,60 +39,66 @@ def geospatial_intersect(input_base_folder, input_coverage_folder, output_base_f
 
     coverage_files = find_geospatial_files(input_coverage_folder)
 
-    for subdir in input_base_folder.iterdir():
-        if subdir.is_dir():
-            print(f"🔍 Memproses direktori: {subdir.name}")
+    # Proses file yang langsung ada di `input/`
+    input_files = find_geospatial_files(input_base_folder)
 
-            input_files = find_geospatial_files(subdir)
-            output_subdir = output_base_folder / f"{subdir.name}_intersect_{timestamp}"
-            output_subdir.mkdir(parents=True, exist_ok=True)
+    print("✅ Memulai proses intersect...")
 
-            for input_file in input_files:
-                input_extension = input_file.suffix.lower()
+    for input_file in input_files:
+        input_extension = input_file.suffix.lower()
+        output_folder = output_base_folder
+        output_folder.mkdir(parents=True, exist_ok=True)
 
-                # Tangani output untuk SHP agar tidak bercampur
+        for coverage_file in coverage_files:
+            print(f"\n🔄 Processing intersect: {input_file.name} ∩ {coverage_file.name}...")
+
+            # Pastikan driver KML dapat dibaca
+            if input_file.suffix.lower() == ".kml" or coverage_file.suffix.lower() == ".kml":
+                fiona.drvsupport.supported_drivers["KML"] = "rw"
+
+            try:
+                gdf_input = gpd.read_file(input_file)
+                gdf_coverage = gpd.read_file(coverage_file)
+
+                # Menampilkan jumlah fitur sebelum proses intersect
+                print(f"📌 {input_file.name} memiliki {len(gdf_input)} feature.")
+                print(f"📌 {coverage_file.name} memiliki {len(gdf_coverage)} feature.")
+
+                if gdf_input.empty or gdf_coverage.empty:
+                    print(f"⚠️ Salah satu dataset kosong, melewati file ini...")
+                    continue  # Skip file yang kosong
+
+                # Melakukan operasi INTERSECT
+                print("🚀 Melakukan operasi INTERSECT...")
+                result = gpd.overlay(gdf_input, gdf_coverage, how='intersection', keep_geom_type=False)
+
+                if result.empty:
+                    print(f"⚠️ Hasil intersect kosong untuk {input_file.name}!")
+                    continue
+
+                print(f"✅ Hasil intersect memiliki {len(result)} feature.")
+
+                # Tentukan format output berdasarkan format input
                 if input_extension == ".shp":
-                    output_folder = output_subdir / f"{input_file.stem}_intersect_{timestamp}"
-                    output_folder.mkdir(parents=True, exist_ok=True)
+                    output_extension = ".shp"
+                    output_driver = "ESRI Shapefile"
+                elif input_extension == ".kml":
+                    output_extension = ".kml"
+                    output_driver = "KML"
+                elif input_extension == ".geojson":
+                    output_extension = ".geojson"
+                    output_driver = "GeoJSON"
                 else:
-                    output_folder = output_subdir
+                    raise ValueError(f"❌ Format {input_extension} tidak didukung!")
 
-                for coverage_file in coverage_files:
-                    print(f"🔄 Menginterseksi {input_file.name} dengan {coverage_file.name}")
+                output_file = output_folder / f"{input_file.stem}_intersect{output_extension}"
+                result.to_file(output_file, driver=output_driver)
+                print(f"✅ Hasil intersect disimpan di: {output_file}")
 
-                    # Pastikan driver KML dapat dibaca
-                    if input_file.suffix.lower() == ".kml" or coverage_file.suffix.lower() == ".kml":
-                        fiona.drvsupport.supported_drivers["KML"] = "rw"
+            except Exception as e:
+                print(f"❌ ERROR: Gagal mengolah {input_file.name}: {e}")
 
-                    try:
-                        gdf_input = gpd.read_file(input_file)
-                        gdf_coverage = gpd.read_file(coverage_file)
-
-                        print(f"📌 {input_file.name} - Geometry Type: {gdf_input.geom_type.unique()}")
-                        print(f"📌 {coverage_file.name} - Geometry Type: {gdf_coverage.geom_type.unique()}")
-
-                        # Lakukan intersection
-                        result = gpd.overlay(gdf_input, gdf_coverage, how='intersection', keep_geom_type=False)
-
-                        # Tentukan format output berdasarkan format input
-                        if input_extension == ".shp":
-                            output_extension = ".shp"
-                            output_driver = "ESRI Shapefile"
-                        elif input_extension == ".kml":
-                            output_extension = ".kml"
-                            output_driver = "KML"
-                        elif input_extension == ".geojson":
-                            output_extension = ".geojson"
-                            output_driver = "GeoJSON"
-                        else:
-                            raise ValueError(f"❌ Format {input_extension} tidak didukung!")
-
-                        output_file = output_folder / f"{input_file.stem}{output_extension}"
-                        result.to_file(output_file, driver=output_driver)
-                        print(f"✅ Hasil intersect disimpan di: {output_file}")
-
-                    except Exception as e:
-                        print(f"⚠️ Gagal mengolah {input_file.name}: {e}")
+    print("\n🎉 Proses intersect selesai!")
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parents[3]
