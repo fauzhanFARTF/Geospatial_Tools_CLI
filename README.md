@@ -19,7 +19,7 @@ geospatial_tools_cli/
 |-- build/                        # Direktori build (jika diperlukan)
 |-- data/                         
 |   |-- input/                    # Folder untuk file input geospasial
-|   |-- input_coverage/            # Folder untuk input coverage (intersect, union, erase)
+|   |-- input_coverage/           # Folder untuk input overlay (intersect, union, erase)
 |   |-- output/                   # Folder untuk hasil transformasi
 |   |-- storage/                  # Penyimpanan file hasil transformasi yang telah diorganisir
 |       |-- gdb/
@@ -33,40 +33,17 @@ geospatial_tools_cli/
 |   |   |-- __init__.py
 |   |   |-- cli.py                 # Entry point CLI
 |   |   |-- converters/            # Modul konversi format geospasial
-|   |   |   |-- gdb_to_geojson.py
-|   |   |   |-- gdb_to_kml.py
-|   |   |   |-- gdb_to_geojson.py 
-|   |   |   |-- gdb_to_shp.py
-|   |   |   |-- geojson_to_kml.py
-|   |   |   |-- geojson_to_shp_zip.py
-|   |   |   |-- geojson_to_shp.py
-|   |   |   |-- kml_to_geojson.py
-|   |   |   |-- kml_to_shp_zip.py
-|   |   |   |-- kml_to_shp.py
-|   |   |   |-- shp_to_geojson.py
-|   |   |   |-- shp_to_kml.py               
 |   |   |-- projection_transformation/  # Modul transformasi proyeksi
-|   |   |   |-- check_projection.py
-|   |   |   |-- projection_transformation_to_TM3.py
-|   |   |   |-- projection_transformation_to_UTM.py
-|   |   |   |-- projection_transformation_to_WGS84.py
 |   |   |-- analytic/               # Modul analisis spasial
-|   |   |   |-- erase.py
-|   |   |   |-- intersection.py
-|   |   |   |-- union.py
 |   |   |-- calculation/            # Modul perhitungan geospasial
-|   |   |   |-- calculate_area_estimation.py
-|   |   |   |-- calculate_area_fix.py
-|   |   |   |-- calculate_area.py
 |   |   |-- utils/                   # Modul utilitas
 |-- tests/                        # Direktori pengujian
 |-- requirements.txt               # Daftar dependensi Python
-|-- .gitignore                      # File yang tidak perlu di-tracking oleh Git
-|-- .gitattributes                   # Atribut khusus Git
+|-- .gitignore                     # File yang tidak perlu di-tracking oleh Git
 |-- LICENSE
-|-- README.md                       # Dokumentasi proyek
-|-- setup.py                         # Setup script untuk instalasi paket
-|-- pyproject.toml                   # Konfigurasi modern Python packaging
+|-- README.md                      # Dokumentasi proyek
+|-- setup.py                        # Setup script untuk instalasi paket
+|-- pyproject.toml                  # Konfigurasi modern Python packaging
 ```
 
 ---
@@ -99,7 +76,7 @@ geospatial-tools --help
 ## 🛠️ Cara Penggunaan
 ### Menampilkan Bantuan
 ```bash
-python -m geospatial_tools_cli.cli --help
+geospatial-tools --help
 ```
 
 ### Contoh Penggunaan
@@ -144,10 +121,9 @@ Proyek ini dilisensikan di bawah **MIT License**.
 
 ## 📌 Kontak
 Untuk pertanyaan atau masalah, silakan hubungi:
-📩 Email: [fn.fauzannurrachman@gmail.com]
+📩 Email: fn.fauzannurrachman@gmail.com  
 📌 GitHub Issues: [Geospatial Tools CLI](https://github.com/fauzhanFARTF/geospatial-tools-cli/issues)
 
 ---
 
 🚀 **Selamat menggunakan Geospatial Tools CLI!**
-
