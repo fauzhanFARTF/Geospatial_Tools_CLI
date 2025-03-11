@@ -200,6 +200,7 @@ def convert_geojson():
         print("1. GeoJSON → KML")
         print("2. GeoJSON → SHP")
         print("3. GeoJSON → SHP & ZIP")
+        print("4. GeoJSON → CSV")
         print("0. Back  🔙")
         choice = input("Please Select: ")
 
@@ -214,6 +215,10 @@ def convert_geojson():
         if choice == "3":
             print("\n🔄 Processing conversion GeoJSON to SHP & ZIP...\n")
             subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_shp_zip.py"], capture_output=False)
+            input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
+        if choice == "4":
+            print("\n🔄 Processing conversion GeoJSON to CSV...\n")
+            subprocess.run(["python", "src/geospatial_tools_cli/converters/geojson_to_csv.py"], capture_output=False)
             input("\n⏎ Press Enter to return...")  # Agar output tidak langsung hilang    
         if choice == "0":
             break
