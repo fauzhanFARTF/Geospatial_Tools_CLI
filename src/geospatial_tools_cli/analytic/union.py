@@ -5,21 +5,14 @@ import geopandas as gpd
 import fiona
 
 def find_geospatial_files(folder_path):
-    """Mencari file geospasial (GeoJSON, KML, SHP) di dalam folder utama."""
+    """Mencari file geospasial (GeoJSON, KML, SHP) di dalam folder."""
     folder_path = Path(folder_path)
 
     if not folder_path.exists():
         raise FileNotFoundError(f"❌ Folder {folder_path} tidak ditemukan!")
 
     supported_formats = {".geojson", ".kml", ".shp"}
-    geospatial_files = [
-        file for file in folder_path.glob("*")  # Hanya ambil file di folder utama
-        if file.suffix.lower() in supported_formats
-    ]
-
-    print(f"🔍 Menemukan {len(geospatial_files)} file di {folder_path}:")
-    for file in geospatial_files:
-        print(f"  - {file}")  # ✅ Debugging: Pastikan file ditemukan
+    geospatial_files = [file for file in folder_path.rglob("*") if file.suffix.lower() in supported_formats]
 
     if not geospatial_files:
         raise FileNotFoundError(f"⚠️ Tidak ada file geospasial ditemukan di {folder_path}.")
@@ -27,7 +20,7 @@ def find_geospatial_files(folder_path):
     return geospatial_files
 
 def geospatial_union(input_base_folder, input_coverage_folder, output_base_folder):
-    """Melakukan operasi union antara file geospasial di folder input dan file coverage."""
+    """Melakukan union antara file geospasial di folder input dan file coverage."""
     
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     input_base_folder = Path(input_base_folder)
@@ -39,66 +32,49 @@ def geospatial_union(input_base_folder, input_coverage_folder, output_base_folde
 
     coverage_files = find_geospatial_files(input_coverage_folder)
 
-    # Proses file yang langsung ada di `input/`
-    input_files = find_geospatial_files(input_base_folder)
+    for subdir in input_base_folder.iterdir():
+        if subdir.is_dir():
+            print(f"🔍 Memproses direktori: {subdir.name}")
 
-    print("✅ Memulai proses union...")
+            input_files = find_geospatial_files(subdir)
+            output_subdir = output_base_folder / f"{subdir.name}_{timestamp}_union"
+            output_subdir.mkdir(parents=True, exist_ok=True)
 
-    for input_file in input_files:
-        input_extension = input_file.suffix.lower()
-        output_folder = output_base_folder
-        output_folder.mkdir(parents=True, exist_ok=True)
+            for input_file in input_files:
+                input_extension = input_file.suffix.lower()
+                output_folder = output_subdir
 
-        for coverage_file in coverage_files:
-            print(f"\n🔄 Processing union: {input_file.name} ⨁ {coverage_file.name}...")
+                for coverage_file in coverage_files:
+                    print(f"🔄 Menggabungkan {input_file.name} dengan {coverage_file.name}")
 
-            # Pastikan driver KML dapat dibaca
-            if input_file.suffix.lower() == ".kml" or coverage_file.suffix.lower() == ".kml":
-                fiona.drvsupport.supported_drivers["KML"] = "rw"
+                    if input_file.suffix.lower() == ".kml" or coverage_file.suffix.lower() == ".kml":
+                        fiona.drvsupport.supported_drivers["KML"] = "rw"
 
-            try:
-                gdf_input = gpd.read_file(input_file)
-                gdf_coverage = gpd.read_file(coverage_file)
+                    try:
+                        gdf_input = gpd.read_file(input_file)
+                        gdf_coverage = gpd.read_file(coverage_file)
 
-                # Menampilkan jumlah fitur sebelum proses union
-                print(f"📌 {input_file.name} memiliki {len(gdf_input)} fitur.")
-                print(f"📌 {coverage_file.name} memiliki {len(gdf_coverage)} fitur.")
+                        print(f"📌 {input_file.name} - Geometry Type: {gdf_input.geom_type.unique()}")
+                        print(f"📌 {coverage_file.name} - Geometry Type: {gdf_coverage.geom_type.unique()}")
 
-                if gdf_input.empty or gdf_coverage.empty:
-                    print(f"⚠️ Salah satu dataset kosong, melewati file ini...")
-                    continue  # Skip file yang kosong
+                        result = gpd.overlay(gdf_input, gdf_coverage, how='union', keep_geom_type=False)
 
-                # Melakukan operasi UNION
-                print("🚀 Melakukan operasi UNION...")
-                result = gpd.overlay(gdf_input, gdf_coverage, how='union', keep_geom_type=False)
+                        output_driver = {
+                            ".shp": "ESRI Shapefile",
+                            ".kml": "KML",
+                            ".geojson": "GeoJSON"
+                        }.get(input_extension, None)
 
-                if result.empty:
-                    print(f"⚠️ Hasil union kosong untuk {input_file.name}!")
-                    continue
+                        if output_driver is None:
+                            print(f"❌ Format {input_extension} tidak didukung!")
+                            continue
 
-                print(f"✅ Hasil union memiliki {len(result)} fitur.")
+                        output_file = output_folder / f"{input_file.stem}{input_extension}"
+                        result.to_file(output_file, driver=output_driver)
+                        print(f"✅ Hasil union disimpan di: {output_file}")
 
-                # Tentukan format output berdasarkan format input
-                if input_extension == ".shp":
-                    output_extension = ".shp"
-                    output_driver = "ESRI Shapefile"
-                elif input_extension == ".kml":
-                    output_extension = ".kml"
-                    output_driver = "KML"
-                elif input_extension == ".geojson":
-                    output_extension = ".geojson"
-                    output_driver = "GeoJSON"
-                else:
-                    raise ValueError(f"❌ Format {input_extension} tidak didukung!")
-
-                output_file = output_folder / f"{input_file.stem}_union{output_extension}"
-                result.to_file(output_file, driver=output_driver)
-                print(f"✅ Hasil union disimpan di: {output_file}")
-
-            except Exception as e:
-                print(f"❌ ERROR: Gagal mengolah {input_file.name}: {e}")
-
-    print("\n🎉 Proses union selesai!")
+                    except Exception as e:
+                        print(f"⚠️ Gagal mengolah {input_file.name}: {e}")
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parents[3]
